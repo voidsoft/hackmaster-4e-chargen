@@ -420,3 +420,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Vite Distribution File
+dist/
