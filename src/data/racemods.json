@@ -1,0 +1,33 @@
+[
+    {
+        "name": "Human",
+        "strMod": 0,
+        "dexMod": 0,
+        "conMod": 0,
+        "intMod": 0,
+        "wisMod": 0,
+        "chaMod": 0,
+        "comMod": 0
+    },
+    {
+        "name": "Elf",
+        "strMod": 0,
+        "dexMod": 1,
+        "conMod": -1,
+        "intMod": 0,
+        "wisMod": 0,
+        "chaMod": 0,
+        "comMod": 0
+    },
+    {
+        "name": "Dwarf",
+        "strMod": 0,
+        "dexMod": 0,
+        "conMod": 0,
+        "intMod": 0,
+        "wisMod": 0,
+        "chaMod": -1,
+        "comMod": -1
+    }
+]
+
