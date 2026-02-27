@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { CreateHackmasterChar, RollStats } from "../model/characterdata"
-import type { HackmasterChar } from "../model/characterdata"
+import type { HackmasterChar, StatModifiers } from "../model/characterdata"
 
 
 /* Holds the contextual data for the process of 
@@ -9,7 +9,7 @@ the details of what stage we're at. */
 interface GenerationContextData {
     CurrentStage: number /* 1 - Roll Stats, 2 - Pick Race, 3 - Pick Class */    
     MaxStage: number /* The max stage that has been reached in the process */
-    Details: HackmasterChar
+    Details: HackmasterChar    
 } 
 
 /* This is the reducer actionm it basically gives is the details of
@@ -17,13 +17,12 @@ interface GenerationContextData {
   or might be the more general next/prev stage actions. */
 interface GenerationAction { 
     type: string;
-    data: object;
+    data: object | null;
 }
 
 export type GenerationPageProps = { state: GenerationContextData, dispatch: React.Dispatch<GenerationAction> }
 
-export function GenerationReducer(state: GenerationContextData, action: GenerationAction) {
-  console.log(state);
+export function GenerationReducer(state: GenerationContextData, action: GenerationAction) {  
   switch (action.type) {
     case 'rollstats': {
       RollStats(state.Details);
@@ -32,6 +31,12 @@ export function GenerationReducer(state: GenerationContextData, action: Generati
 
       return { ...state }
     }
+
+    case 'previewStatMods': {
+      state.Details.PreviewStatModifier = action.data as StatModifiers;
+      return { ...state }
+    }
+
     case 'next': {
       if (state.CurrentStage < state.MaxStage) {
         state.CurrentStage += 1;
@@ -60,7 +65,7 @@ export function GenerationReducer(state: GenerationContextData, action: Generati
 export const contextInitialState: GenerationContextData = {
     CurrentStage: 1,
     MaxStage: 1,
-    Details: CreateHackmasterChar()
+    Details: CreateHackmasterChar(),
 }   
 
 

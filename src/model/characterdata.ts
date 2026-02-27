@@ -1,24 +1,38 @@
 import { Roll3D6, RollD100 } from "./dicerolls";
 
-export class AbilityScore {
+export class AbilityScore {  
   Main: number = 0;
   Fractional: number = 0;
+
+
+
+  constructor(main?: number, fractional?: number) {
+    this.Main = main || 0;
+    this.Fractional = fractional || 0;
+  }
 }
 
 export interface HackmasterChar {
   Name: string;
   Race: string;
   Class: string;
-  AbilityScores: AbilityScores;
+  BaseAbilityScores: AbilityScores;
+  AbilityScoreModifiers: StatModifiers[];
+  CalculatedAbilityScores: AbilityScores;
+  PreviewStatModifier: StatModifiers | null;
   CreationLog: string[];
 }
 
 export function CreateHackmasterChar(): HackmasterChar {
+  let abilityScores = CreateAbilityScores();
   return {
     Name: "",
     Race: "",
     Class: "",
-    AbilityScores: CreateAbilityScores(),
+    BaseAbilityScores: abilityScores,
+    AbilityScoreModifiers: [],
+    CalculatedAbilityScores: abilityScores,
+    PreviewStatModifier: null,
     CreationLog: []
   };
 }
@@ -48,9 +62,43 @@ export function CreateAbilityScores(): AbilityScores {
   };
 }
 
+export interface StatModifiers {
+    strMod: number,
+    dexMod: number,
+    conMod: number,
+    intMod: number,
+    wisMod: number,
+    chaMod: number,
+    comMod: number
+}
+
+export function RecalculateStats(character: HackmasterChar) {
+  let base = character.BaseAbilityScores;
+  let statsClone: AbilityScores = {
+    Strength: new AbilityScore(base.Strength.Main, base.Strength.Fractional),
+    Dexterity: new AbilityScore(base.Dexterity.Main, base.Dexterity.Fractional),
+    Constitution: new AbilityScore(base.Constitution.Main, base.Constitution.Fractional),
+    Intelligence: new AbilityScore(base.Intelligence.Main, base.Intelligence.Fractional),
+    Wisdom: new AbilityScore(base.Wisdom.Main, base.Wisdom.Fractional),
+    Charisma: new AbilityScore(base.Charisma.Main, base.Charisma.Fractional),
+    Comliness: new AbilityScore(base.Comliness.Main, base.Comliness.Fractional),
+    Honor: base.Honor
+  }
+  let modifiedStats = character.AbilityScoreModifiers.reduce((acc, mod) => {
+    acc.Strength.Main += mod.strMod;
+    acc.Dexterity.Main += mod.dexMod;
+    acc.Constitution.Main += mod.conMod;
+    acc.Intelligence.Main += mod.intMod;
+    acc.Wisdom.Main += mod.wisMod;
+    acc.Charisma.Main += mod.chaMod;
+    acc.Comliness.Main += mod.comMod;
+    return acc;
+  }, statsClone);
+  character.CalculatedAbilityScores = modifiedStats;
+}
 
 export function RollStats(character: HackmasterChar) {
-    const scores = character.AbilityScores;
+    const scores = character.BaseAbilityScores;
     scores.Strength.Main = Roll3D6();
     scores.Strength.Fractional = RollD100();
     scores.Dexterity.Main = Roll3D6();
