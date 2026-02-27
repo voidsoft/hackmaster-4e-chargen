@@ -11,6 +11,26 @@ interface GenerationAction {
 
 
 export type GenerationPageProps = { state: GenerationContextData, dispatch: React.Dispatch<GenerationAction> }
+
+
+function Prev(state: GenerationContextData): GenerationContextData {
+    const newState = {...state};
+    if (state.CurrentStage > 1) {
+        newState.CurrentStage -= 1;
+    }
+    return newState;
+}
+
+
+function Next(state: GenerationContextData): GenerationContextData {
+    const newState = {...state};
+    if (state.CurrentStage < state.MaxStage) {        
+        newState.CurrentStage += 1;       
+    }
+    return newState;
+}
+
+
 /**
   Stages
   1 - Roll Stats
@@ -19,44 +39,39 @@ export type GenerationPageProps = { state: GenerationContextData, dispatch: Reac
 
  */
 export function GenerationReducer(state: GenerationContextData, action: GenerationAction) {  
-  switch (action.type) {
-    case 'rollstats': {
-      RollStats(state.Details);
-      if (state.MaxStage == 1)
-        state.MaxStage = 2;
+    switch (action.type) {
+        case 'rollstats': {
+            RollStats(state.Details);
+            if (state.MaxStage == 1)
+            state.MaxStage = 2;
 
-      return { ...state }
-    }
+            return { ...state }
+        }
 
-    case 'previewStatMods': {
-      state.PreviewStatModifier = action.data as StatModifiers;
-      return { ...state }
-    }
+        case 'previewStatMods': {
+            state.PreviewStatModifier = action.data as StatModifiers;
+            return { ...state }
+        }
 
-    case 'next': {
-      if (state.CurrentStage < state.MaxStage) {
-        state.CurrentStage += 1;
-      }
-      return { ...state }
-    }
-    case 'prev': {
-      if (state.CurrentStage > 1) {
-        state.CurrentStage -= 1;
-      }
-      return { ...state }
-    }
-    case 'pickracecomplete': {
-      if (state.MaxStage == 2) {
-        state.MaxStage = 3;
-        let racemods = action.data as RaceModifiers;
-        state.PreviewStatModifier = null;
-        state.Details.SetRace(racemods);
-      }
-      return { ...state }
-    }
+        case 'next': {
+            return Next(state);      
+        }
+        case 'prev': {
+            return Prev(state);
+        }
 
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+        case 'pickracecomplete': {
+            if (state.MaxStage == 2) {
+            state.MaxStage = 3;
+            let racemods = action.data as RaceModifiers;
+            state.PreviewStatModifier = null;
+            state.Details.SetRace(racemods);
+            }
+            return { ...state }
+        }
+
+        default: {
+            throw new Error(`Unhandled action type: ${action.type}`);
+        }
     }
-  }
 }

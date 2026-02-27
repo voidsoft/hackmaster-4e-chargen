@@ -1,3 +1,4 @@
+import { Button } from '@mantine/core';
 import type { GenerationPageProps } from '../context/reducer';
 
 export function RollStats(props: GenerationPageProps) {  
@@ -8,7 +9,7 @@ export function RollStats(props: GenerationPageProps) {
 
   return (
     <div className="card">
-      <button onClick={() => rollStats()}>Roll Stats</button>
+      <Button onClick={() => rollStats()}>Roll Stats</Button>
     </div>
   )  
 }

@@ -7,7 +7,7 @@ import { contextInitialState } from './context/context';
 import { GenerationReducer } from './context/reducer';
 import { PickRace } from './components/PickRace';
 import { PickClass } from './components/PickClass';
-import { MantineProvider, Grid } from '@mantine/core';
+import { MantineProvider, Grid, Button } from '@mantine/core';
 
 
 
@@ -17,6 +17,14 @@ import { MantineProvider, Grid } from '@mantine/core';
 function MainScreen() {
   const [state, dispatch] = useReducer(GenerationReducer, contextInitialState);
   
+  const previous = () => {    
+    dispatch({ type: 'prev', data: {} })
+  }
+
+  const next = () => {
+    dispatch({ type: 'next', data: {} })
+  }
+
   return (
 
     <>
@@ -32,8 +40,10 @@ function MainScreen() {
         </Grid.Col>
       </Grid>
       
-      <button onClick={() => dispatch({ type: 'prev', data: {} })}>Previous</button>
-      <button className={state.CurrentStage >= state.MaxStage ? "disabled" : "" } onClick={() => dispatch({ type: 'next', data: {} })}>Next</button>
+      <Button onClick={() => previous() }>Previous</Button>
+      <Button 
+        className={state.CurrentStage >= state.MaxStage ? "disabled" : "" } 
+        onClick={() => next() }>Next</Button>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { NativeSelect } from '@mantine/core';
+import { NativeSelect, Button } from '@mantine/core';
 import type { GenerationPageProps } from '../context/reducer';
 import raceData from '../data/racemods.json';
 import { useState } from 'react';
@@ -7,7 +7,10 @@ import { useState } from 'react';
 export function PickRace(props: GenerationPageProps) {
   const [selectedRace, setRace] = useState("Human");
   const races = raceData.map(a => a.name);
-  const previewMods = (newRace: string) => {    
+
+  const raceSelectionChanged = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    let newRace = event.currentTarget.value;
+    setRace(newRace);
     let raceMods = raceData.find(r => r.name == newRace) || null
     props.dispatch({ type: 'previewStatMods', data: raceMods });
   }
@@ -23,12 +26,8 @@ export function PickRace(props: GenerationPageProps) {
       <div className="card">
         <div></div>
         <NativeSelect value={selectedRace} label="Race" description="Choose a race from the list below" data={races}  
-        onChange={(event) => {
-          let newRace = event.currentTarget.value;
-          setRace(newRace);
-          previewMods(newRace);
-        }} />
-        <button onClick={() => chooseRace()}>Accept</button>
+        onChange={(event) => raceSelectionChanged(event)} />
+        <Button onClick={() => chooseRace()}>Accept</Button>
       </div>      
       )
 }
