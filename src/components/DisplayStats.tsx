@@ -1,6 +1,6 @@
 import { Badge, Table } from '@mantine/core';
-import type { GenerationPageProps } from '../context/context';
-import type {  AbilityScore, HackmasterChar } from '../model/characterdata';
+import type { GenerationPageProps } from '../context/reducer';
+import type {  AbilityScore, HackmasterChar, StatModifiers } from '../model/characterdata';
 
 
 
@@ -22,13 +22,13 @@ function StatAndModifierRow(props: { statName: string, stat: AbilityScore, modVa
   )
 }
 
-type StatsAndModifiersProps = { charData: HackmasterChar }
+type StatsAndModifiersProps = { charData: HackmasterChar, previewStatModifier: StatModifiers | null }
 
 export function StatsAndModifiers(props: StatsAndModifiersProps) {  
 
   const { charData } = props;
   const scores = charData.CalculatedAbilityScores
-  const mods = charData.PreviewStatModifier
+  const mods = props.previewStatModifier
   
   return (
   <Table>
@@ -53,7 +53,7 @@ export function StatsAndModifiers(props: StatsAndModifiersProps) {
 export function DisplayStats(props: GenerationPageProps) {   
   return (
     <div className="card">      
-      <StatsAndModifiers charData={props.state.Details} />
+      <StatsAndModifiers charData={props.state.Details} previewStatModifier={props.state.PreviewStatModifier} />
     </div>
   )  
 }

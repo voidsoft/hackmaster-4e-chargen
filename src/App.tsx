@@ -3,7 +3,8 @@ import './App.css'
 import { useReducer } from 'react'
 import { DisplayStats } from './components/DisplayStats';
 import { RollStats } from './components/RollStats';
-import { GenerationReducer, contextInitialState } from './context/context';
+import { contextInitialState } from './context/context';
+import { GenerationReducer } from './context/reducer';
 import { PickRace } from './components/PickRace';
 import { PickClass } from './components/PickClass';
 import { MantineProvider, Grid } from '@mantine/core';

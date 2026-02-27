@@ -1,5 +1,5 @@
 # Hackmaster 4th Edition Character Generator
-
+A character generator application for Hackmaster 4th Edition, by Andreas Paterson and James Moran
 
 # Viewing the Readme file in VSCode
 

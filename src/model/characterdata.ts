@@ -12,31 +12,59 @@ export class AbilityScore {
   }
 }
 
-export interface HackmasterChar {
+export class HackmasterChar {
   Name: string;
   Race: string;
   Class: string;
   BaseAbilityScores: AbilityScores;
-  AbilityScoreModifiers: StatModifiers[];
+  AbilityScoreModifiers: Record<string,StatModifiers>;
   CalculatedAbilityScores: AbilityScores;
-  PreviewStatModifier: StatModifiers | null;
   CreationLog: string[];
+
+  constructor() {
+    this.Name = "";
+    this.Race = "";
+    this.Class = "";
+    this.BaseAbilityScores = CreateAbilityScores()
+    this.AbilityScoreModifiers = {}
+    this.CalculatedAbilityScores = CreateAbilityScores()
+    this.CreationLog = []
+  }
+
+  public SetRace(raceMods: RaceModifiers) {
+    this.AbilityScoreModifiers["Race"] = raceMods;
+    this.RecalculateStats();
+  }
+
+  public RecalculateStats() {
+    let base = this.BaseAbilityScores;
+    let statsClone: AbilityScores = {
+      Strength: new AbilityScore(base.Strength.Main, base.Strength.Fractional),
+      Dexterity: new AbilityScore(base.Dexterity.Main, base.Dexterity.Fractional),
+      Constitution: new AbilityScore(base.Constitution.Main, base.Constitution.Fractional),
+      Intelligence: new AbilityScore(base.Intelligence.Main, base.Intelligence.Fractional),
+      Wisdom: new AbilityScore(base.Wisdom.Main, base.Wisdom.Fractional),
+      Charisma: new AbilityScore(base.Charisma.Main, base.Charisma.Fractional),
+      Comliness: new AbilityScore(base.Comliness.Main, base.Comliness.Fractional),
+      Honor: base.Honor
+    }
+    let modifiers = Object.entries(this.AbilityScoreModifiers)
+    let modifiedStats = modifiers.reduce((acc, entry) => {
+      let mod = entry[1];
+      acc.Strength.Main += mod.strMod;
+      acc.Dexterity.Main += mod.dexMod;
+      acc.Constitution.Main += mod.conMod;
+      acc.Intelligence.Main += mod.intMod;
+      acc.Wisdom.Main += mod.wisMod;
+      acc.Charisma.Main += mod.chaMod;
+      acc.Comliness.Main += mod.comMod;
+      return acc;
+    }, statsClone);
+    this.CalculatedAbilityScores = modifiedStats;
 }
 
-export function CreateHackmasterChar(): HackmasterChar {
-  let abilityScores = CreateAbilityScores();
-  return {
-    Name: "",
-    Race: "",
-    Class: "",
-    BaseAbilityScores: abilityScores,
-    AbilityScoreModifiers: [],
-    CalculatedAbilityScores: abilityScores,
-    PreviewStatModifier: null,
-    CreationLog: []
-  };
-}
 
+}
 
 export interface AbilityScores {  
   Strength: AbilityScore;
@@ -63,39 +91,27 @@ export function CreateAbilityScores(): AbilityScores {
 }
 
 export interface StatModifiers {
-    strMod: number,
-    dexMod: number,
-    conMod: number,
-    intMod: number,
-    wisMod: number,
-    chaMod: number,
-    comMod: number
+    strMod: number;
+    dexMod: number;
+    conMod: number;
+    intMod: number;
+    wisMod: number;
+    chaMod: number;
+    comMod: number;
 }
 
-export function RecalculateStats(character: HackmasterChar) {
-  let base = character.BaseAbilityScores;
-  let statsClone: AbilityScores = {
-    Strength: new AbilityScore(base.Strength.Main, base.Strength.Fractional),
-    Dexterity: new AbilityScore(base.Dexterity.Main, base.Dexterity.Fractional),
-    Constitution: new AbilityScore(base.Constitution.Main, base.Constitution.Fractional),
-    Intelligence: new AbilityScore(base.Intelligence.Main, base.Intelligence.Fractional),
-    Wisdom: new AbilityScore(base.Wisdom.Main, base.Wisdom.Fractional),
-    Charisma: new AbilityScore(base.Charisma.Main, base.Charisma.Fractional),
-    Comliness: new AbilityScore(base.Comliness.Main, base.Comliness.Fractional),
-    Honor: base.Honor
-  }
-  let modifiedStats = character.AbilityScoreModifiers.reduce((acc, mod) => {
-    acc.Strength.Main += mod.strMod;
-    acc.Dexterity.Main += mod.dexMod;
-    acc.Constitution.Main += mod.conMod;
-    acc.Intelligence.Main += mod.intMod;
-    acc.Wisdom.Main += mod.wisMod;
-    acc.Charisma.Main += mod.chaMod;
-    acc.Comliness.Main += mod.comMod;
-    return acc;
-  }, statsClone);
-  character.CalculatedAbilityScores = modifiedStats;
+export interface RaceModifiers extends StatModifiers {
+  name: string;
+  languages:string[];
+  bonuses:string[];
+  talents:string[];
+  allowedClasses:string[];
+  allowedMultiClasses:string[];          
+  downsides: string[]
 }
+
+
+
 
 export function RollStats(character: HackmasterChar) {
     const scores = character.BaseAbilityScores;
@@ -114,6 +130,7 @@ export function RollStats(character: HackmasterChar) {
     scores.Comliness.Main = Roll3D6();
     scores.Comliness.Fractional = RollD100();
     scores.Honor = calculateHonor(scores);
+    character.RecalculateStats();
   }
 
   function calculateHonor(scores: AbilityScores): number {

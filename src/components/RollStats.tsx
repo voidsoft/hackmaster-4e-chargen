@@ -1,4 +1,4 @@
-import type { GenerationPageProps } from '../context/context';
+import type { GenerationPageProps } from '../context/reducer';
 
 export function RollStats(props: GenerationPageProps) {  
   

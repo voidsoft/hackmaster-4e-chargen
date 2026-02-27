@@ -1,5 +1,5 @@
 import { NativeSelect } from '@mantine/core';
-import type { GenerationPageProps } from '../context/context';
+import type { GenerationPageProps } from '../context/reducer';
 import raceData from '../data/racemods.json';
 import { useState } from 'react';
 
@@ -12,6 +12,12 @@ export function PickRace(props: GenerationPageProps) {
     props.dispatch({ type: 'previewStatMods', data: raceMods });
   }
 
+  const chooseRace = () => {
+    let raceMods = raceData.find(r => r.name == selectedRace) || null
+    if (raceMods)
+      props.dispatch({ type: 'pickracecomplete', data: raceMods });
+  }
+
 
   return (
       <div className="card">
@@ -22,7 +28,7 @@ export function PickRace(props: GenerationPageProps) {
           setRace(newRace);
           previewMods(newRace);
         }} />
-        <button onClick={() => props.dispatch({ type: 'stagecomplete', data: {} })}>Accept</button>
+        <button onClick={() => chooseRace()}>Accept</button>
       </div>      
       )
 }
